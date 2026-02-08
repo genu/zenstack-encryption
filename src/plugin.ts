@@ -249,9 +249,9 @@ export function createEncryptionPlugin<Schema extends SchemaDef>(config: Encrypt
             if (isEncryptedField(field) && typeof value === 'string') {
                 try {
                     data[fieldName] = await decryptValue(modelName, field, value);
-                } catch (error) {
-                    // If decryption fails, log warning and keep original value
-                    console.warn(`Failed to decrypt field ${modelName}.${fieldName}:`, error);
+                } catch {
+                    // If decryption fails, keep original value
+                    console.warn('Failed to decrypt an encrypted field');
                 }
                 continue;
             }
