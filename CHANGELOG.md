@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.1.2](https://github.com/genu/zenstack-encryption/compare/v0.1.1...v0.1.2) (2026-02-08)
+
+
+### Features
+
+* add version bump step to release workflow ([7277ca1](https://github.com/genu/zenstack-encryption/commit/7277ca1d1f379a7e53590d48cda8e25f82dad2ba))
+
+
+### Bug Fixes
+
+* update version to 0.1.1 in package.json and add version input description in release workflow ([feacd79](https://github.com/genu/zenstack-encryption/commit/feacd796e979139941072392cd9c150c049bec2d))
+* update version to 0.1.2 in package.json ([d5029ac](https://github.com/genu/zenstack-encryption/commit/d5029aca01f3977db4c50a331e5dcba984c37b9e))
+
 ## [0.1.1](https://github.com/genu/zenstack-encryption/compare/v0.1.0...v0.1.1) (2026-02-08)
 
 
