@@ -172,7 +172,7 @@ If you need to derive keys from low-entropy passwords, use a proper KDF (PBKDF2,
 - **ORM only** — only applies to ORM CRUD operations, not direct Kysely query builder calls via `client.$qb`
 - **String fields only** — `@encrypted` can only be applied to `String` fields. Applying `@encrypted` to non-String fields will log a warning at runtime and be ignored.
 - **No encrypted filtering** — encrypted fields **cannot** be used in `where` clauses, `orderBy`, or unique constraints. Since encryption is non-deterministic (each encryption produces different ciphertext due to random IVs), queries like `where: { secretField: 'value' }` will never match. If you need to search by a field, don't encrypt it — or store a separate non-encrypted hash for lookups.
-- **Storage overhead** — encrypted values are significantly larger than the original plaintext. Expect roughly **120 bytes of overhead** per field (IV + metadata + base64 encoding), so a 100-character plaintext becomes ~250 characters. Ensure your database columns use `TEXT` or a sufficiently large `VARCHAR`.
+- **Storage overhead** — encrypted values are larger than the original plaintext. Expect roughly **80 bytes of overhead** per field (IV + GCM tag + metadata + base64 encoding), plus ~37% expansion of the plaintext itself. A 100-character plaintext becomes ~215 characters. Ensure your database columns use `TEXT` or a sufficiently large `VARCHAR`.
 
 ## License
 
