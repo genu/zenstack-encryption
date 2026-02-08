@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.2.0](https://github.com/genu/zenstack-encryption/compare/v0.1.3...v0.2.0) (2026-02-08)
+
+
+### ⚠ BREAKING CHANGES
+
+* rename API to encryption() with key/previousKeys
+
+### Features
+
+* rename API to encryption() with key/previousKeys ([5a8309f](https://github.com/genu/zenstack-encryption/commit/5a8309fb9c38ae7586c1b833fdbd7b71204fbe0c))
+
 ## [0.1.3](https://github.com/genu/zenstack-encryption/compare/v0.1.2...v0.1.3) (2026-02-08)
 
 
