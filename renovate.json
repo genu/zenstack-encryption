@@ -1,0 +1,34 @@
+{
+    "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+    "extends": [
+        "config:recommended",
+        ":dependencyDashboard",
+        ":semanticCommitTypeAll(deps)",
+        ":label(dependencies)",
+        ":disablePeerDependencies"
+    ],
+    "packageRules": [
+        {
+            "description": "Group all ZenStack packages together",
+            "groupName": "zenstack",
+            "matchPackagePatterns": ["^@zenstackhq/"],
+            "matchUpdateTypes": ["minor", "patch"]
+        },
+        {
+            "description": "Group linting/formatting tools",
+            "groupName": "linting",
+            "matchPackagePatterns": ["eslint", "prettier"]
+        },
+        {
+            "description": "Group test infrastructure",
+            "groupName": "testing",
+            "matchPackageNames": ["vitest"]
+        },
+        {
+            "description": "Automerge patch updates for dev dependencies",
+            "matchDepTypes": ["devDependencies"],
+            "matchUpdateTypes": ["patch"],
+            "automerge": true
+        }
+    ]
+}
