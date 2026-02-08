@@ -288,7 +288,7 @@ export function createEncryptionPlugin<Schema extends SchemaDef>(config: Encrypt
         }
     }
 
-    return definePlugin<Schema, {}, {}>({
+    return definePlugin<Schema, Record<string, never>, Record<string, never>>({
         id: 'encryption',
         name: 'Encryption Plugin',
         description: 'Automatically encrypts and decrypts fields marked with @encrypted',
@@ -296,7 +296,7 @@ export function createEncryptionPlugin<Schema extends SchemaDef>(config: Encrypt
         onQuery: async (ctx) => {
             await ensureInitialized();
             const { model, operation, args, proceed, client } = ctx;
-            const schema = (client as any).schema as SchemaDef;
+            const schema = (client as unknown as { schema: SchemaDef }).schema;
             const modelDef = schema.models[model];
 
             // Check if this model has any encrypted fields
@@ -313,6 +313,7 @@ export function createEncryptionPlugin<Schema extends SchemaDef>(config: Encrypt
                 operation === 'updateMany' ||
                 operation === 'createManyAndReturn';
 
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             let processedArgs = args as Record<string, any> | undefined;
 
             if (isWrite) {

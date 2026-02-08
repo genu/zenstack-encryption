@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { Decrypter } from '../src/decrypter.js';
 import { Encrypter } from '../src/encrypter.js';
+import type { FieldDef } from '@zenstackhq/orm/schema';
 import type { CustomEncryption } from '../src/types.js';
 import { isCustomEncryption } from '../src/types.js';
 import { deriveKey, ENCRYPTION_KEY_BYTES } from '../src/utils.js';
@@ -186,10 +187,10 @@ describe('Custom encryption', () => {
             decrypt: vi.fn(async (_model, _field, cipher) => cipher.replace('ENC:', '')),
         };
 
-        const encrypted = await config.encrypt('User', {} as any, 'secret');
+        const encrypted = await config.encrypt('User', {} as unknown as FieldDef, 'secret');
         expect(encrypted).toBe('ENC:secret');
 
-        const decrypted = await config.decrypt('User', {} as any, encrypted);
+        const decrypted = await config.decrypt('User', {} as unknown as FieldDef, encrypted);
         expect(decrypted).toBe('secret');
 
         expect(config.encrypt).toHaveBeenCalledTimes(1);
@@ -202,7 +203,7 @@ describe('Custom encryption', () => {
             decrypt: vi.fn(async (_model, _field, cipher) => cipher.split(':')[2]!),
         };
 
-        const field = { name: 'secretToken', type: 'String' } as any;
+        const field = { name: 'secretToken', type: 'String' } as unknown as FieldDef;
         const encrypted = await config.encrypt('User', field, 'value');
         expect(encrypted).toBe('User:secretToken:value');
 
@@ -220,8 +221,8 @@ describe('Custom encryption', () => {
             },
         };
 
-        await expect(config.encrypt('User', {} as any, 'value')).rejects.toThrow('KMS unavailable');
-        await expect(config.decrypt('User', {} as any, 'value')).rejects.toThrow('KMS unavailable');
+        await expect(config.encrypt('User', {} as unknown as FieldDef, 'value')).rejects.toThrow('KMS unavailable');
+        await expect(config.decrypt('User', {} as unknown as FieldDef, 'value')).rejects.toThrow('KMS unavailable');
     });
 });
 
