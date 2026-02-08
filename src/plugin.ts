@@ -7,12 +7,28 @@ import { isCustomEncryption } from './types.js';
 import { deriveKey } from './utils.js';
 
 const ENCRYPTED_ATTRIBUTE = '@encrypted';
+const warnedNonStringFields = new Set<string>();
 
 /**
  * Check if a field has the @encrypted attribute
  */
 function isEncryptedField(field: FieldDef): boolean {
     return field.attributes?.some((attr) => attr.name === ENCRYPTED_ATTRIBUTE) ?? false;
+}
+
+/**
+ * Warn once if @encrypted is applied to a non-String field
+ */
+function warnIfNonStringEncrypted(modelName: string, fieldName: string, field: FieldDef): void {
+    if (isEncryptedField(field) && field.type !== 'String') {
+        const key = `${modelName}.${fieldName}`;
+        if (!warnedNonStringFields.has(key)) {
+            warnedNonStringFields.add(key);
+            console.warn(
+                `@encrypted is only supported on String fields. ${key} (type: ${field.type}) will be ignored.`,
+            );
+        }
+    }
 }
 
 /**
@@ -83,12 +99,14 @@ export function createEncryptionPlugin<Schema extends SchemaDef>(config: Encrypt
         if (!model) return;
 
         for (const [fieldName, value] of Object.entries(data)) {
-            if (value === null || value === undefined || value === '') {
+            if (value === null || value === undefined) {
                 continue;
             }
 
             const field = model.fields[fieldName];
             if (!field) continue;
+
+            warnIfNonStringEncrypted(modelName, fieldName, field);
 
             // Handle encrypted string fields
             if (isEncryptedField(field) && typeof value === 'string') {
@@ -151,8 +169,6 @@ export function createEncryptionPlugin<Schema extends SchemaDef>(config: Encrypt
                 const nestedData = updateObj['data'];
                 if (nestedData) {
                     await encryptWriteData(schema, modelName, nestedData as Record<string, unknown>);
-                } else {
-                    await encryptWriteData(schema, modelName, updateObj);
                 }
             }
         }
@@ -238,7 +254,7 @@ export function createEncryptionPlugin<Schema extends SchemaDef>(config: Encrypt
         if (!model) return;
 
         for (const [fieldName, value] of Object.entries(data)) {
-            if (value === null || value === undefined || value === '') {
+            if (value === null || value === undefined) {
                 continue;
             }
 
@@ -288,18 +304,21 @@ export function createEncryptionPlugin<Schema extends SchemaDef>(config: Encrypt
                 return proceed(args);
             }
 
-            // Clone args to avoid mutating original
-            const processedArgs = args ? JSON.parse(JSON.stringify(args)) : undefined;
-
             // Handle write operations - encrypt data before writing
-            if (
+            const isWrite =
                 operation === 'create' ||
                 operation === 'update' ||
                 operation === 'upsert' ||
                 operation === 'createMany' ||
                 operation === 'updateMany' ||
-                operation === 'createManyAndReturn'
-            ) {
+                operation === 'createManyAndReturn';
+
+            let processedArgs = args as Record<string, any> | undefined;
+
+            if (isWrite) {
+                // Clone args to avoid mutating original
+                processedArgs = args ? JSON.parse(JSON.stringify(args)) : undefined;
+
                 if (processedArgs?.data) {
                     if (Array.isArray(processedArgs.data)) {
                         for (const item of processedArgs.data) {
