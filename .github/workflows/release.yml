@@ -51,6 +51,10 @@ jobs:
             - name: Install dependencies
               run: pnpm install --frozen-lockfile
 
+            - name: Bump version
+              if: github.event_name == 'workflow_dispatch'
+              run: npm version ${{ inputs.version }} --no-git-tag-version
+
             - name: Run tests
               run: pnpm test
 
