@@ -19,6 +19,22 @@ const encryptionMetaSchema = z.object({
 });
 
 /**
+ * Resolve a key input to a Uint8Array. If the input is a string, it is
+ * derived to 32 bytes via SHA-256. If it is already a Uint8Array, its
+ * length is validated.
+ */
+export async function deriveKey(input: string | Uint8Array): Promise<Uint8Array> {
+    if (typeof input === 'string') {
+        const encoded = new TextEncoder().encode(input);
+        return new Uint8Array(await crypto.subtle.digest('SHA-256', encoded));
+    }
+    if (input.length !== ENCRYPTION_KEY_BYTES) {
+        throw new Error(`Encryption key must be ${ENCRYPTION_KEY_BYTES} bytes`);
+    }
+    return input;
+}
+
+/**
  * Load a raw encryption key into a CryptoKey object
  */
 export async function loadKey(key: Uint8Array, keyUsages: KeyUsage[]): Promise<CryptoKey> {

@@ -5,15 +5,17 @@ import type { FieldDef } from '@zenstackhq/orm/schema';
  */
 export type SimpleEncryption = {
     /**
-     * The encryption key (must be 32 bytes / 256 bits)
+     * The encryption key. Pass a Uint8Array of exactly 32 bytes, or a string
+     * which will be derived to a 32-byte key via SHA-256.
      */
-    encryptionKey: Uint8Array;
+    encryptionKey: string | Uint8Array;
 
     /**
      * Additional decryption keys for key rotation support.
      * When decrypting, all keys (encryptionKey + decryptionKeys) are tried.
+     * Each key can be a Uint8Array (32 bytes) or a string (derived via SHA-256).
      */
-    decryptionKeys?: Uint8Array[];
+    decryptionKeys?: (string | Uint8Array)[];
 };
 
 /**

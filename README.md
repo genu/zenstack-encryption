@@ -77,15 +77,18 @@ npx zenstack generate
 
 ```typescript
 import { ZenStackClient } from '@zenstackhq/orm';
-import { createEncryptionPlugin, ENCRYPTION_KEY_BYTES } from 'zenstack-encryption';
+import { createEncryptionPlugin } from 'zenstack-encryption';
 import schema from './schema.js';
 
-// Load your 32-byte key from environment, KMS, vault, etc.
-const encryptionKey = new Uint8Array(
-    Buffer.from(process.env.ENCRYPTION_KEY!, 'base64')
-);
+// Pass a string secret — it will be derived to a 32-byte key via SHA-256
+const encryptionPlugin = createEncryptionPlugin({
+    encryptionKey: process.env.ENCRYPTION_SECRET!,
+});
 
-const encryptionPlugin = createEncryptionPlugin({ encryptionKey });
+// Or pass a raw 32-byte Uint8Array if you already have one
+// const encryptionPlugin = createEncryptionPlugin({
+//     encryptionKey: new Uint8Array(Buffer.from(process.env.ENCRYPTION_KEY!, 'base64')),
+// });
 
 const client = new ZenStackClient(schema, {
     plugins: [encryptionPlugin],
@@ -104,12 +107,12 @@ console.log(user.secretToken); // → "super-secret-value" (decrypted)
 
 ## Key Rotation
 
-When you need to rotate encryption keys, pass old keys via `decryptionKeys`. The plugin will use the primary `encryptionKey` for new writes, but try all keys (primary + decryption) when decrypting:
+When you need to rotate encryption keys, pass old keys via `decryptionKeys`. The plugin will use the primary `encryptionKey` for new writes, but try all keys (primary + decryption) when decrypting. Both strings and `Uint8Array` keys can be mixed:
 
 ```typescript
 const plugin = createEncryptionPlugin({
-    encryptionKey: newKey,        // used for all new encryptions
-    decryptionKeys: [oldKey],     // tried during decryption alongside newKey
+    encryptionKey: 'new-secret',          // used for all new encryptions
+    decryptionKeys: ['old-secret'],       // tried during decryption alongside encryptionKey
 });
 ```
 

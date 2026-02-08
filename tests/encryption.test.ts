@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { Decrypter } from '../src/decrypter.js';
 import { Encrypter } from '../src/encrypter.js';
 import { isCustomEncryption } from '../src/types.js';
-import { ENCRYPTION_KEY_BYTES } from '../src/utils.js';
+import { deriveKey, ENCRYPTION_KEY_BYTES } from '../src/utils.js';
 
 // Generate test keys
 function randomKey(): Uint8Array {
@@ -119,6 +119,62 @@ describe('Key rotation', () => {
         const decrypter = new Decrypter([newKey, oldKey]);
         const decrypted = await decrypter.decrypt(encrypted);
         expect(decrypted).toBe('new secret');
+    });
+});
+
+describe('deriveKey', () => {
+    it('derives a 32-byte key from a string', async () => {
+        const key = await deriveKey('my-secret');
+        expect(key).toBeInstanceOf(Uint8Array);
+        expect(key.length).toBe(ENCRYPTION_KEY_BYTES);
+    });
+
+    it('produces the same key for the same string', async () => {
+        const a = await deriveKey('deterministic');
+        const b = await deriveKey('deterministic');
+        expect(a).toEqual(b);
+    });
+
+    it('produces different keys for different strings', async () => {
+        const a = await deriveKey('secret-one');
+        const b = await deriveKey('secret-two');
+        expect(a).not.toEqual(b);
+    });
+
+    it('passes through a valid Uint8Array', async () => {
+        const raw = randomKey();
+        const key = await deriveKey(raw);
+        expect(key).toBe(raw);
+    });
+
+    it('rejects a Uint8Array with wrong length', async () => {
+        await expect(deriveKey(new Uint8Array(16))).rejects.toThrow('Encryption key must be 32 bytes');
+    });
+});
+
+describe('String key encryption', () => {
+    it('encrypts and decrypts with a string-derived key', async () => {
+        const key = await deriveKey('my-secret-key');
+        const encrypter = new Encrypter(key);
+        const decrypter = new Decrypter([key]);
+
+        const encrypted = await encrypter.encrypt('hello world');
+        const decrypted = await decrypter.decrypt(encrypted);
+        expect(decrypted).toBe('hello world');
+    });
+
+    it('supports key rotation with mixed string and Uint8Array keys', async () => {
+        const oldKey = await deriveKey('old-secret');
+        const newKey = randomKey();
+
+        // Encrypt with old string-derived key
+        const encrypter = new Encrypter(oldKey);
+        const encrypted = await encrypter.encrypt('rotated data');
+
+        // Decrypt with new Uint8Array key as primary, old string-derived as fallback
+        const decrypter = new Decrypter([newKey, oldKey]);
+        const decrypted = await decrypter.decrypt(encrypted);
+        expect(decrypted).toBe('rotated data');
     });
 });
 

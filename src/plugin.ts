@@ -4,6 +4,7 @@ import { Decrypter } from './decrypter.js';
 import { Encrypter } from './encrypter.js';
 import type { CustomEncryption, EncryptionConfig, SimpleEncryption } from './types.js';
 import { isCustomEncryption } from './types.js';
+import { deriveKey } from './utils.js';
 
 const ENCRYPTED_ATTRIBUTE = '@encrypted';
 
@@ -31,14 +32,29 @@ export function createEncryptionPlugin<Schema extends SchemaDef>(config: Encrypt
     let encrypter: Encrypter | undefined;
     let decrypter: Decrypter | undefined;
     let customEncryption: CustomEncryption | undefined;
+    let initialized = false;
+    let initPromise: Promise<void> | undefined;
 
-    if (isCustomEncryption(config)) {
-        customEncryption = config;
-    } else {
-        const simpleConfig = config as SimpleEncryption;
-        encrypter = new Encrypter(simpleConfig.encryptionKey);
-        const allDecryptionKeys = [simpleConfig.encryptionKey, ...(simpleConfig.decryptionKeys ?? [])];
-        decrypter = new Decrypter(allDecryptionKeys);
+    async function ensureInitialized() {
+        if (initialized) return;
+        if (initPromise) return initPromise;
+
+        initPromise = (async () => {
+            if (isCustomEncryption(config)) {
+                customEncryption = config;
+            } else {
+                const simpleConfig = config as SimpleEncryption;
+                const encryptionKey = await deriveKey(simpleConfig.encryptionKey);
+                const decryptionKeys = await Promise.all(
+                    (simpleConfig.decryptionKeys ?? []).map(deriveKey),
+                );
+                encrypter = new Encrypter(encryptionKey);
+                decrypter = new Decrypter([encryptionKey, ...decryptionKeys]);
+            }
+            initialized = true;
+        })();
+
+        return initPromise;
     }
 
     async function encryptValue(model: string, field: FieldDef, value: string): Promise<string> {
@@ -262,6 +278,7 @@ export function createEncryptionPlugin<Schema extends SchemaDef>(config: Encrypt
         description: 'Automatically encrypts and decrypts fields marked with @encrypted',
 
         onQuery: async (ctx) => {
+            await ensureInitialized();
             const { model, operation, args, proceed, client } = ctx;
             const schema = (client as any).schema as SchemaDef;
             const modelDef = schema.models[model];
