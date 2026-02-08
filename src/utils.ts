@@ -124,5 +124,7 @@ export async function _decrypt(data: string, findKey: (digest: string) => Promis
         return decoder.decode(decrypted);
     }
 
-    throw lastError;
+    throw lastError instanceof Error
+        ? lastError
+        : new Error('Decryption failed with all available keys');
 }
