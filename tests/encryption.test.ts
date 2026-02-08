@@ -239,7 +239,7 @@ describe('isCustomEncryption', () => {
     it('returns false for simple config', () => {
         expect(
             isCustomEncryption({
-                encryptionKey: randomKey(),
+                key: randomKey(),
             }),
         ).toBe(false);
     });

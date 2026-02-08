@@ -77,22 +77,22 @@ npx zenstack generate
 
 ```typescript
 import { ZenStackClient } from '@zenstackhq/orm';
-import { createEncryptionPlugin } from 'zenstack-encryption';
+import { encryption } from 'zenstack-encryption';
 import schema from './schema.js';
 
 // Pass a string secret — it will be derived to a 32-byte key via SHA-256
-const encryptionPlugin = createEncryptionPlugin({
-    encryptionKey: process.env.ENCRYPTION_SECRET!,
+const client = new ZenStackClient(schema, {
+    plugins: [
+        encryption({
+            key: process.env.ENCRYPTION_SECRET!,
+        }),
+    ],
 });
 
 // Or pass a raw 32-byte Uint8Array if you already have one
-// const encryptionPlugin = createEncryptionPlugin({
-//     encryptionKey: new Uint8Array(Buffer.from(process.env.ENCRYPTION_KEY!, 'base64')),
-// });
-
-const client = new ZenStackClient(schema, {
-    plugins: [encryptionPlugin],
-});
+// encryption({
+//     key: new Uint8Array(Buffer.from(process.env.ENCRYPTION_KEY!, 'base64')),
+// })
 
 // Fields are encrypted/decrypted transparently
 const user = await client.user.create({
@@ -107,18 +107,18 @@ console.log(user.secretToken); // → "super-secret-value" (decrypted)
 
 ## Key Rotation
 
-When you need to rotate encryption keys, pass old keys via `decryptionKeys`. The plugin will use the primary `encryptionKey` for new writes, but try all keys (primary + decryption) when decrypting. Both strings and `Uint8Array` keys can be mixed:
+When you need to rotate encryption keys, pass old keys via `previousKeys`. The plugin will use the primary `key` for new writes, but try all keys (`key` + `previousKeys`) when decrypting. Both strings and `Uint8Array` keys can be mixed:
 
 ```typescript
-const plugin = createEncryptionPlugin({
-    encryptionKey: 'new-secret',          // used for all new encryptions
-    decryptionKeys: ['old-secret'],       // tried during decryption alongside encryptionKey
+const plugin = encryption({
+    key: 'new-secret',          // used for all new encryptions
+    previousKeys: ['old-secret'],       // tried during decryption alongside key
 });
 ```
 
 This enables zero-downtime key rotation:
 
-1. Deploy with both keys configured (new key as primary, old key in `decryptionKeys`)
+1. Deploy with both keys configured (new key as primary, old key in `previousKeys`)
 2. Existing data encrypted with the old key is still readable
 3. New writes use the new key
 4. Optionally re-encrypt old data by reading and updating records
@@ -130,7 +130,7 @@ For integration with AWS KMS, HashiCorp Vault, or any other encryption provider,
 ```typescript
 import type { FieldDef } from '@zenstackhq/orm/schema';
 
-const plugin = createEncryptionPlugin({
+const plugin = encryption({
     encrypt: async (model: string, field: FieldDef, plaintext: string) => {
         // Call your encryption service
         return await myKms.encrypt(plaintext);
@@ -150,12 +150,12 @@ You can also add the plugin to an existing `ZenStackClient` instance using `$use
 
 ```typescript
 const baseClient = new ZenStackClient(schema);
-const client = baseClient.$use(createEncryptionPlugin({ encryptionKey }));
+const client = baseClient.$use(encryption({ key }));
 ```
 
 ## Security Notes
 
-When passing a string as `encryptionKey`, the plugin derives a 32-byte key using SHA-256. This is **not** a password-based key derivation function — it does not use salting or iterations. Your string secret should be **high-entropy** (e.g. a random 32+ character token from a secrets manager, not a human-chosen password).
+When passing a string as `key`, the plugin derives a 32-byte key using SHA-256. This is **not** a password-based key derivation function — it does not use salting or iterations. Your string secret should be **high-entropy** (e.g. a random 32+ character token from a secrets manager, not a human-chosen password).
 
 ```bash
 # Good: generate a random secret

@@ -8,14 +8,14 @@ export type SimpleEncryption = {
      * The encryption key. Pass a Uint8Array of exactly 32 bytes, or a string
      * which will be derived to a 32-byte key via SHA-256.
      */
-    encryptionKey: string | Uint8Array;
+    key: string | Uint8Array;
 
     /**
-     * Additional decryption keys for key rotation support.
-     * When decrypting, all keys (encryptionKey + decryptionKeys) are tried.
+     * Previous keys for key rotation support.
+     * When decrypting, all keys (key + previousKeys) are tried.
      * Each key can be a Uint8Array (32 bytes) or a string (derived via SHA-256).
      */
-    decryptionKeys?: (string | Uint8Array)[];
+    previousKeys?: (string | Uint8Array)[];
 };
 
 /**

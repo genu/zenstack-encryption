@@ -44,7 +44,7 @@ function hasEncryptedFields(model: ModelDef): boolean {
  * @param config Encryption configuration (simple or custom)
  * @returns A runtime plugin that handles field encryption/decryption
  */
-export function createEncryptionPlugin<Schema extends SchemaDef>(config: EncryptionConfig) {
+export function encryption<Schema extends SchemaDef>(config: EncryptionConfig) {
     let encrypter: Encrypter | undefined;
     let decrypter: Decrypter | undefined;
     let customEncryption: CustomEncryption | undefined;
@@ -60,12 +60,12 @@ export function createEncryptionPlugin<Schema extends SchemaDef>(config: Encrypt
                 customEncryption = config;
             } else {
                 const simpleConfig = config as SimpleEncryption;
-                const encryptionKey = await deriveKey(simpleConfig.encryptionKey);
-                const decryptionKeys = await Promise.all(
-                    (simpleConfig.decryptionKeys ?? []).map(deriveKey),
+                const primaryKey = await deriveKey(simpleConfig.key);
+                const prevKeys = await Promise.all(
+                    (simpleConfig.previousKeys ?? []).map(deriveKey),
                 );
-                encrypter = new Encrypter(encryptionKey);
-                decrypter = new Decrypter([encryptionKey, ...decryptionKeys]);
+                encrypter = new Encrypter(primaryKey);
+                decrypter = new Decrypter([primaryKey, ...prevKeys]);
             }
             initialized = true;
         })();
