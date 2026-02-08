@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.1.2](https://github.com/genu/zenstack-encryption/compare/v0.1.1...v0.1.2) (2026-02-08)
+
+
+### Features
+
+* add custom encryption tests with error propagation ([d63a6d6](https://github.com/genu/zenstack-encryption/commit/d63a6d6517091fa3e2d5ecc0e99a51024a405f3b))
+* add version bump step to release workflow ([7277ca1](https://github.com/genu/zenstack-encryption/commit/7277ca1d1f379a7e53590d48cda8e25f82dad2ba))
+* add warning for non-String fields with [@encrypted](https://github.com/encrypted) attribute ([4f8e021](https://github.com/genu/zenstack-encryption/commit/4f8e0214ef49fc70bd34883d05f6fe6ebad6359d))
+* allow passing secret directly as string ([aebd669](https://github.com/genu/zenstack-encryption/commit/aebd6696b6b9cfe29d3f45b5e4b38d6370024425))
+
+
+### Bug Fixes
+
+* data leak  when decryption fails ([a9a91d2](https://github.com/genu/zenstack-encryption/commit/a9a91d24154491570e7b1fc392b17a425a32905d))
+* update version to 0.1.1 in package.json and add version input description in release workflow ([feacd79](https://github.com/genu/zenstack-encryption/commit/feacd796e979139941072392cd9c150c049bec2d))
+* update version to 0.1.2 in package.json ([d5029ac](https://github.com/genu/zenstack-encryption/commit/d5029aca01f3977db4c50a331e5dcba984c37b9e))
+
 ## [0.1.1](https://github.com/genu/zenstack-encryption/compare/v0.1.0...v0.1.1) (2026-02-08)
 
 
