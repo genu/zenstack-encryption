@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.3](https://github.com/genu/zenstack-encryption/compare/v0.1.2...v0.1.3) (2026-02-08)
+
+
+### Bug Fixes
+
+* improve error handling in _decrypt function ([c7aa95f](https://github.com/genu/zenstack-encryption/commit/c7aa95f3bde0a4811d88ba93ea81b8db8d6e0684))
+
 ## [0.1.1](https://github.com/genu/zenstack-encryption/compare/v0.1.0...v0.1.1) (2026-02-08)
 
 
