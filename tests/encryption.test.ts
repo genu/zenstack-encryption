@@ -1,6 +1,7 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { Decrypter } from '../src/decrypter.js';
 import { Encrypter } from '../src/encrypter.js';
+import type { CustomEncryption } from '../src/types.js';
 import { isCustomEncryption } from '../src/types.js';
 import { deriveKey, ENCRYPTION_KEY_BYTES } from '../src/utils.js';
 
@@ -175,6 +176,52 @@ describe('String key encryption', () => {
         const decrypter = new Decrypter([newKey, oldKey]);
         const decrypted = await decrypter.decrypt(encrypted);
         expect(decrypted).toBe('rotated data');
+    });
+});
+
+describe('Custom encryption', () => {
+    it('uses custom encrypt/decrypt functions', async () => {
+        const config: CustomEncryption = {
+            encrypt: vi.fn(async (_model, _field, plain) => `ENC:${plain}`),
+            decrypt: vi.fn(async (_model, _field, cipher) => cipher.replace('ENC:', '')),
+        };
+
+        const encrypted = await config.encrypt('User', {} as any, 'secret');
+        expect(encrypted).toBe('ENC:secret');
+
+        const decrypted = await config.decrypt('User', {} as any, encrypted);
+        expect(decrypted).toBe('secret');
+
+        expect(config.encrypt).toHaveBeenCalledTimes(1);
+        expect(config.decrypt).toHaveBeenCalledTimes(1);
+    });
+
+    it('receives model and field parameters', async () => {
+        const config: CustomEncryption = {
+            encrypt: vi.fn(async (model, field, plain) => `${model}:${field.name}:${plain}`),
+            decrypt: vi.fn(async (_model, _field, cipher) => cipher.split(':')[2]!),
+        };
+
+        const field = { name: 'secretToken', type: 'String' } as any;
+        const encrypted = await config.encrypt('User', field, 'value');
+        expect(encrypted).toBe('User:secretToken:value');
+
+        const decrypted = await config.decrypt('User', field, encrypted);
+        expect(decrypted).toBe('value');
+    });
+
+    it('propagates errors from custom functions', async () => {
+        const config: CustomEncryption = {
+            encrypt: async () => {
+                throw new Error('KMS unavailable');
+            },
+            decrypt: async () => {
+                throw new Error('KMS unavailable');
+            },
+        };
+
+        await expect(config.encrypt('User', {} as any, 'value')).rejects.toThrow('KMS unavailable');
+        await expect(config.decrypt('User', {} as any, 'value')).rejects.toThrow('KMS unavailable');
     });
 });
 
