@@ -153,12 +153,26 @@ const baseClient = new ZenStackClient(schema);
 const client = baseClient.$use(createEncryptionPlugin({ encryptionKey }));
 ```
 
+## Security Notes
+
+When passing a string as `encryptionKey`, the plugin derives a 32-byte key using SHA-256. This is **not** a password-based key derivation function — it does not use salting or iterations. Your string secret should be **high-entropy** (e.g. a random 32+ character token from a secrets manager, not a human-chosen password).
+
+```bash
+# Good: generate a random secret
+openssl rand -base64 32
+
+# Bad: weak password
+ENCRYPTION_SECRET="password123"
+```
+
+If you need to derive keys from low-entropy passwords, use a proper KDF (PBKDF2, Argon2) yourself and pass the resulting `Uint8Array` directly.
+
 ## Limitations
 
 - **ORM only** — only applies to ORM CRUD operations, not direct Kysely query builder calls via `client.$qb`
-- **String fields only** — `@encrypted` can only be applied to `String` fields
-- **No encrypted filtering** — encrypted fields cannot be used in `where` clauses since encryption is non-deterministic (each encryption produces different ciphertext due to random IVs)
-- **Storage overhead** — encrypted values are longer than the original plaintext due to base64 encoding + metadata; ensure your database column can accommodate the larger size
+- **String fields only** — `@encrypted` can only be applied to `String` fields. Applying `@encrypted` to non-String fields will log a warning at runtime and be ignored.
+- **No encrypted filtering** — encrypted fields **cannot** be used in `where` clauses, `orderBy`, or unique constraints. Since encryption is non-deterministic (each encryption produces different ciphertext due to random IVs), queries like `where: { secretField: 'value' }` will never match. If you need to search by a field, don't encrypt it — or store a separate non-encrypted hash for lookups.
+- **Storage overhead** — encrypted values are significantly larger than the original plaintext. Expect roughly **120 bytes of overhead** per field (IV + metadata + base64 encoding), so a 100-character plaintext becomes ~250 characters. Ensure your database columns use `TEXT` or a sufficiently large `VARCHAR`.
 
 ## License
 
