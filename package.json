@@ -52,7 +52,7 @@
         "zod": "4.3.6"
     },
     "devDependencies": {
-        "@zenstackhq/orm": "3.3.3",
+        "@zenstackhq/orm": "3.4.1",
         "eslint": "10.0.2",
         "tsdown": "0.20.3",
         "typescript": "5.9.3",

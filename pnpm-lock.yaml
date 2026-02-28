@@ -13,8 +13,8 @@ importers:
         version: 4.3.6
     devDependencies:
       '@zenstackhq/orm':
-        specifier: 3.3.3
-        version: 3.3.3(zod@4.3.6)
+        specifier: 3.4.1
+        version: 3.4.1(zod@4.3.6)
       eslint:
         specifier: 10.0.2
         version: 10.0.2
@@ -628,11 +628,11 @@ packages:
   '@vitest/utils@4.0.18':
     resolution: {integrity: sha512-msMRKLMVLWygpK3u2Hybgi4MNjcYJvwTb0Ru09+fOyCXIgT5raYP041DRRdiJiI3k/2U6SEbAETB3YtBrUkCFA==}
 
-  '@zenstackhq/common-helpers@3.3.3':
-    resolution: {integrity: sha512-9EUFvvH2evI/A7zy51BoFKrBrCtgAeuh7zfP+3dZiw04xceXFE38lwPwi4+hL0Sq7NYsnY5+zwqWN2/iA+e6ag==}
+  '@zenstackhq/common-helpers@3.4.1':
+    resolution: {integrity: sha512-U3bmDA5dFWyRhtyPI5oLkwU7jYdJVG2/7tD/NnxCax2zl2mZtHZVT7BY4rCTJLNuBmTiUAJVcJ8dBO/nNH+cYw==}
 
-  '@zenstackhq/orm@3.3.3':
-    resolution: {integrity: sha512-e2ANLtpDhTAO53hk9a6jc7F/MT2PGPVuZWWHIp70aNELIFFrPqk5ABN96FmB5wtOAPR+qd5lZUUPhCdMExwdDQ==}
+  '@zenstackhq/orm@3.4.1':
+    resolution: {integrity: sha512-XotpN2HgKaUYh0t4Inyy7kV4H6NUpqahXtCeSV9d/tRbINjXC1JGF6EBQopkrtjIGYB4cZ1kg/7C7Z7QYjQHqw==}
     peerDependencies:
       better-sqlite3: ^12.5.0
       mysql2: ^3.16.1
@@ -649,8 +649,13 @@ packages:
       sql.js:
         optional: true
 
-  '@zenstackhq/schema@3.3.3':
-    resolution: {integrity: sha512-5eGFks5odszkteaLujgFevJL1ZX3SKRcnx/vLwhWUhxcHNK+6HDPlyW+15CAAL9dBUgMv2KGWIXrQDayWNsNVw==}
+  '@zenstackhq/schema@3.4.1':
+    resolution: {integrity: sha512-qMSRwNTKUXVdwmv6X7DRRf+BfyYmbgNghZofDbtHbL4JM34dkiD9zO7Aw+Im/QHfTimaaknjZernG8tHf0F1DA==}
+
+  '@zenstackhq/zod@3.4.1':
+    resolution: {integrity: sha512-CAN4jeUaNpvByGEEjkU2FBympFkTfzM51Uk1POQjsUBDDytELtQ0nOQOINbzga5PkUThwrLpbiaq+U6a1JivaQ==}
+    peerDependencies:
+      zod: ^4.0.0
 
   acorn-jsx@5.3.2:
     resolution: {integrity: sha512-rq9s+JNhf0IChjtDXxllJ7g41oZk5SlXtp0LHwyA5cejwn7vKmKp4pPri6YEePv2PU65sAsegbXtIinmDFDXgQ==}
@@ -1775,13 +1780,14 @@ snapshots:
       '@vitest/pretty-format': 4.0.18
       tinyrainbow: 3.0.3
 
-  '@zenstackhq/common-helpers@3.3.3': {}
+  '@zenstackhq/common-helpers@3.4.1': {}
 
-  '@zenstackhq/orm@3.3.3(zod@4.3.6)':
+  '@zenstackhq/orm@3.4.1(zod@4.3.6)':
     dependencies:
       '@paralleldrive/cuid2': 2.3.1
-      '@zenstackhq/common-helpers': 3.3.3
-      '@zenstackhq/schema': 3.3.3
+      '@zenstackhq/common-helpers': 3.4.1
+      '@zenstackhq/schema': 3.4.1
+      '@zenstackhq/zod': 3.4.1(zod@4.3.6)
       cuid: 3.0.0
       decimal.js: 10.6.0
       json-stable-stringify: 1.3.0
@@ -1795,9 +1801,15 @@ snapshots:
       zod: 4.3.6
       zod-validation-error: 4.0.2(zod@4.3.6)
 
-  '@zenstackhq/schema@3.3.3':
+  '@zenstackhq/schema@3.4.1':
     dependencies:
       decimal.js: 10.6.0
+
+  '@zenstackhq/zod@3.4.1(zod@4.3.6)':
+    dependencies:
+      '@zenstackhq/schema': 3.4.1
+      decimal.js: 10.6.0
+      zod: 4.3.6
 
   acorn-jsx@5.3.2(acorn@8.16.0):
     dependencies:
