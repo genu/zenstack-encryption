@@ -1,0 +1,25 @@
+name: Prepare Release
+
+on:
+    workflow_dispatch:
+
+permissions:
+    contents: write
+    pull-requests: write
+
+jobs:
+    prepare-release:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v6
+              with:
+                  fetch-depth: 0
+
+            - name: Create release commit
+              uses: genu/prepare-release-action@v1
+              id: prepare
+
+            - name: Create release PR
+              if: steps.prepare.outputs.committed == 'true'
+              uses: googleapis/release-please-action@v4
