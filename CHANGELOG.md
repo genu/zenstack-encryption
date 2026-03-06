@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.2.1](https://github.com/genu/zenstack-encryption/compare/v0.2.0...v0.2.1) (2026-03-06)
+
+
+### Features
+
+* add manual prepare-release workflow using reusable action ([#28](https://github.com/genu/zenstack-encryption/issues/28)) ([ced9c71](https://github.com/genu/zenstack-encryption/commit/ced9c7129da7a7ce26dcddd67df79fc4448504d2))
+
+
+### Bug Fixes
+
+* remove skip condition for release-please branches in CI ([#30](https://github.com/genu/zenstack-encryption/issues/30)) ([08beb55](https://github.com/genu/zenstack-encryption/commit/08beb553179cf188be7c01192d4ce12bdadf2b56))
+* use PAT for release-please to trigger CI on release PRs ([#31](https://github.com/genu/zenstack-encryption/issues/31)) ([5e114bc](https://github.com/genu/zenstack-encryption/commit/5e114bca401bc5be3be4d4e41a2d3decd6a706fe))
+
 ## [0.2.0](https://github.com/genu/zenstack-encryption/compare/v0.1.3...v0.2.0) (2026-02-08)
 
 
