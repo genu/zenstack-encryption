@@ -1,6 +1,6 @@
 {
     "name": "zenstack-encryption",
-    "version": "0.2.0",
+    "version": "0.2.1",
     "description": "ZenStack Encryption Plugin - Automatic field encryption/decryption for @encrypted fields",
     "keywords": [
         "zenstack",
