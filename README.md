@@ -1,6 +1,6 @@
 # zenstack-encryption
 
-A [ZenStack](https://zenstack.dev) v3 community plugin that provides transparent field-level encryption and decryption using the `@encrypted` attribute.
+A [ZenStack](https://zenstack.dev) plugin that provides transparent field-level encryption and decryption using the `@encrypted` attribute.
 
 ## Features
 
