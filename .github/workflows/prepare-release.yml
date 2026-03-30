@@ -18,10 +18,5 @@ jobs:
 
             - name: Create release commit
               uses: genu/prepare-release-action@v1
-              id: prepare
-
-            - name: Create release PR
-              if: steps.prepare.outputs.committed == 'true'
-              uses: googleapis/release-please-action@v4
-              with:
-                  token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
+              env:
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
