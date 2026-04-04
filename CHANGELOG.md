@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.2](https://github.com/genu/zenstack-encryption/compare/v0.2.1...v0.2.2) (2026-04-04)
+
+
+### Bug Fixes
+
+* **ci:** update prepare-release workflow for PR-based flow ([#49](https://github.com/genu/zenstack-encryption/issues/49)) ([9e3a6a9](https://github.com/genu/zenstack-encryption/commit/9e3a6a9ebe1957deafeeb29fddfcc44c839f57b1)), closes [#48](https://github.com/genu/zenstack-encryption/issues/48)
+
 ## [0.2.1](https://github.com/genu/zenstack-encryption/compare/v0.2.0...v0.2.1) (2026-03-06)
 
 
